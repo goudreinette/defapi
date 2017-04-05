@@ -5,7 +5,7 @@
 
 
 (defparser query-parser
-  "<query> =  <'{'> selection-set* <'}'>
+  "<query> =  <'{'> selection* <'}'>
    selection-set = identifier <'{'> selection* <'}'>
    <selection> =  selection-set | identifier
    <identifier> = #'\\w+'"
@@ -16,12 +16,13 @@
     ([:selection-set x & rest] :seq) x))
 
 (defn- get-executor [executors query]
-  (or
-    (executors (query-key query))
+  (println executors)
+  (get executors
+    (keyword (query-key query))
     (executors :default)))
 
 (defn execute-all [executors query-string]
   (apply merge
     (for [query (query-parser query-string)]
       {(query-key query)
-       ((get-executor executors query) query)})))
+       (apply (get-executor executors query) (rest query))})))

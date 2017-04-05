@@ -22,10 +22,7 @@
       {:body (->> query-string slurp (execute-all executors))})))
 
 (defmacro defapi [name config & executors]
-  `(do
-     (def ~name (mount-server ~(api config executors) {:port 8080}))
-     (mount/start)))
-
-; Demo
-(defapi portfolio-api db
-  :default execute-sql)
+  (let [mounted (mount-server (api config (apply hash-map (map eval executors))) {:port 8080})]
+    `(do
+       (def ~name ~mounted)
+       (mount/start))))
