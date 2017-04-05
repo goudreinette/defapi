@@ -11,18 +11,15 @@
    <identifier> = #'\\w+'"
   :auto-whitespace :comma)
 
-(defn- query-key [query]
-  (match query
-    ([:selection-set x & rest] :seq) x))
 
-(defn- get-executor [executors query]
+(defn- get-executor [executors key]
   (println executors)
   (get executors
-    (keyword (query-key query))
+    (keyword key)
     (executors :default)))
 
 (defn execute-all [executors query-string]
   (apply merge
-    (for [query (query-parser query-string)]
-      {(query-key query)
-       (apply (get-executor executors query) (rest query))})))
+    (for [[_ key & children] (query-parser query-string)]
+      {key
+       ((get-executor executors key) key {} children)})))

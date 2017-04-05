@@ -3,8 +3,8 @@
 
 
 ; Demo
-(defn execute-github [query]
-  {:user "me"
+(defn execute-github [_ {} user repo]
+  {:user user
    :repo "defapi"})
 
 (defapi portfolio-api db
