@@ -8,16 +8,18 @@
          :user     "root"
          :password ""})
 
-(defn- query->sql [query]
+(defn query->sql [query]
   (match query
-    ([:object first & rest] :seq)
+    ([:selection-set first & rest] :seq)
     (str "SELECT " (query->sql rest) " FROM " (query->sql first))
-    [:identifier x]
-    x
+
     ([& rest] :seq)
-    (clojure.string/join ", " (map query->sql rest))))
+    (clojure.string/join ", " (map query->sql rest))
+
+    x
+    x))
 
 
-(defn sql-executor [query]
+(defn execute-sql [query]
   (j/query db (query->sql query)))
 

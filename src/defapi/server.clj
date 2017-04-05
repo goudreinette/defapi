@@ -1,5 +1,5 @@
 (ns defapi.server
-  (:use org.httpkit.server defapi.core)
+  (:use org.httpkit.server defapi.core defapi.sql)
   (:require [mount.core :as mount :refer [defstate]]
             [compojure.core :refer :all]
             [compojure.route :as route]
@@ -16,15 +16,16 @@
 
 
 ; API
-(defn api [config resolvers]
+(defn api [config executors]
   (wrap-json-response
     (POST "/" {query-string :body}
-      {:body (-> query-string slurp resolve-all)})))
+      {:body (->> query-string slurp (execute-all executors))})))
 
-(defmacro defapi [name config & resolvers]
+(defmacro defapi [name config & executors]
   `(do
-     (def ~name (mount-server ~(api config resolvers) {:port 8080}))
+     (def ~name (mount-server ~(api config executors) {:port 8080}))
      (mount/start)))
 
 ; Demo
-(defapi portfolio-api db)
+(defapi portfolio-api db
+  :default execute-sql)

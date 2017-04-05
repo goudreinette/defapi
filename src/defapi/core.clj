@@ -1,28 +1,27 @@
 (ns defapi.core
   (:use defapi.sql)
-  (:refer-clojure :exclude [resolve])
   (:require [instaparse.core :refer [defparser]]
             [clojure.core.match :refer [match]]))
 
 
 (defparser query-parser
-  "<query> = <'{'> selection* <'}'>
-   <selection> = identifier | object
-   object = identifier query
-   identifier = #'\\w+'"
+  "<query> =  <'{'> selection-set* <'}'>
+   selection-set = identifier <'{'> selection* <'}'>
+   <selection> =  selection-set | identifier
+   <identifier> = #'\\w+'"
   :auto-whitespace :comma)
 
 (defn- query-key [query]
   (match query
-    ([:object [:identifier x] & rest] :seq) x))
+    ([:selection-set x & rest] :seq) x))
 
-(defmulti resolver query-key)
+(defn- get-executor [executors query]
+  (or
+    (executors (query-key query))
+    (executors :default)))
 
-(defmethod resolver :default [query]
-  (sql-executor query))
-
-(defn resolve-all [query-string]
+(defn execute-all [executors query-string]
   (apply merge
     (for [query (query-parser query-string)]
       {(query-key query)
-       (resolver query)})))
+       ((get-executor executors query) query)})))
