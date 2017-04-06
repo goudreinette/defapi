@@ -1,22 +1,22 @@
 (ns defapi.core
   (:use defapi.sql)
-  (:require [instaparse.core :refer [defparser]]
+  (:require [instaparse.core :as insta :refer [defparser]]
             [clojure.core.match :refer [match]]))
 
 
 (defparser query-parser
-  "<query> = <'{'> selection* <'}'>
-   children = <''> | <'{'> selection* <'}'>
-   selection = identifier arguments children
+  "set = <''> | <'{'> selector* <'}'>
+   selector = identifier arguments set
    arguments = <''> | <'('> argument* <')'>
    <argument> = identifier <':'> identifier
    <identifier> = #'\\w+'"
   :auto-whitespace :comma)
 
-(defn transform-parsed-query [query]
-  (match query
-    ([:selection key [:arguments & args] [:children & children]] :seq)
-    [key (apply hash-map args) (map transform-parsed-query children)]))
+(def query-transformer
+  (partial insta/transform
+    {:selector  vector
+     :arguments hash-map
+     :set       vector}))
 
 
 
