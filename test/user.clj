@@ -2,11 +2,20 @@
   (:use defapi.server defapi.sql))
 
 
-; Demo
-(defn github-resolver [_ _ _]
-  {:user "reinvdwoerd"
-   :repo "defapi"})
 
-(defapi portfolio-api db
-  :default sql-resolver
+(def repo {"user" "reinvdwoerd"
+           "repo" "defapi"})
+
+; Demo
+(def sql (sql-resolver {:dbtype   "mysql"
+                        :dbname   "portfolio"
+                        :user     "root"
+                        :password ""}))
+
+
+(defn github-resolver [key args children]
+  (select-keys repo children))
+
+; ---
+(defapi portfolio-api sql
   :github github-resolver)

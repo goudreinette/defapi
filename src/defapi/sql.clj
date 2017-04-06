@@ -3,14 +3,9 @@
             [clojure.core.match :refer [match]]))
 
 
-(def db {:dbtype   "mysql"
-         :dbname   "portfolio"
-         :user     "root"
-         :password ""})
 
-
-(defn sql-resolver [table attrs columns]
-  (println table attrs columns)
-  (j/query db
-    (str "SELECT " (clojure.string/join ", " columns) " FROM " table)))
+(defn sql-resolver [db]
+  (fn [table attrs columns]
+    (j/query db
+      (str "SELECT " (clojure.string/join ", " columns) " FROM " table))))
 

@@ -12,17 +12,18 @@
 (defn mount-server [handler args]
   (defstate server
     :start (run-server handler args)
-    :stop (server)))
+    :stop (server))
+  #_(mount/start))
 
 
 ; API
-(defn api [config resolvers]
+(defn api [resolvers]
   (wrap-json-response
     (POST "/" {query-string :body}
       {:body (->> query-string slurp (resolve-all resolvers))})))
 
-(defmacro defapi [name config & resolvers]
-  (let [mounted (mount-server (api config (apply hash-map (map eval resolvers))) {:port 8080})]
+(defmacro defapi [name default & resolvers]
+  (let [mounted (mount-server (api (apply hash-map :default (eval default) (map eval resolvers))) {:port 8080})]
     `(do
        (def ~name ~mounted)
        (mount/start))))
