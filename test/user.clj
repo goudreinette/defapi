@@ -1,5 +1,5 @@
 (ns user
-  (:use defapi.server defapi.sql))
+  (:use defapi.core defapi.server defapi.sql))
 
 
 
@@ -19,3 +19,5 @@
 ; ---
 (defapi portfolio-api sql
   :github github-resolver)
+
+(mount-api portfolio-api)

@@ -12,9 +12,11 @@
 (defn mount-server [handler args]
   (defstate server
     :start (run-server handler args)
-    :stop (server))
-  #_(mount/start))
+    :stop (server)))
 
+(defn mount-api [api]
+  (mount-server api {:port 8080})
+  (mount/start))
 
 ; API
 (defn api [resolvers]
@@ -23,7 +25,5 @@
       {:body (->> query-string slurp (resolve-all resolvers))})))
 
 (defmacro defapi [name default & resolvers]
-  (let [mounted (mount-server (api (apply hash-map :default (eval default) (map eval resolvers))) {:port 8080})]
-    `(do
-       (def ~name ~mounted)
-       (mount/start))))
+  `(def ~name ~(api (apply hash-map :default (eval default) (map eval resolvers)))))
+

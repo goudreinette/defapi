@@ -1,5 +1,19 @@
 {
-    wp_posts {
+  wp_users {
+	id,
+	user_nicename,
+	user_email,
+	user_pass
+  }
 
-    }
+  wp_posts(id: 1) {
+	id
+	post_date
+	post_name
+  }
+
+
+  github(user: reinvdwoerd) {
+	email repo
+  }
 }

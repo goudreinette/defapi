@@ -5,13 +5,19 @@
 
 
 (defparser query-parser
-  "<query> =  <'{'> selection* <'}'>
-   selection-set = identifier arguments <'{'> selection* <'}'>
+  "<query> = <'{'> selection* <'}'>
+   children = <''> | <'{'> selection* <'}'>
+   selection = identifier arguments children
    arguments = <''> | <'('> argument* <')'>
    <argument> = identifier <':'> identifier
-   <selection> =  selection-set | identifier
    <identifier> = #'\\w+'"
   :auto-whitespace :comma)
+
+(defn transform-parsed-query [query]
+  (match query
+    ([:selection key [:arguments & args] [:children & children]] :seq)
+    [key (apply hash-map args) (map transform-parsed-query children)]))
+
 
 
 (defn- get-resolver [resolvers key]
