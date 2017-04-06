@@ -14,7 +14,7 @@
 
 
 (defn github-resolver [key args children]
-  (select-keys repo children))
+  (select-keys repo (map first children)))
 
 ; ---
 (defapi portfolio-api sql

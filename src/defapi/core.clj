@@ -18,6 +18,7 @@
      :arguments hash-map
      :set       vector}))
 
+(def parse (comp query-transformer query-parser))
 
 
 (defn- get-resolver [resolvers key]
@@ -27,6 +28,6 @@
 
 (defn resolve-all [resolvers query-string]
   (apply merge
-    (for [[_ key [_ & {:as arguments :or {}}] & children] (query-parser query-string)]
+    (for [[key args children] (parse query-string)]
       {key
-       ((get-resolver resolvers key) key arguments children)})))
+       ((get-resolver resolvers key) key args children)})))

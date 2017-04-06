@@ -4,17 +4,16 @@
             [clojure.string :refer [join]]
             [clojure.pprint :refer [pprint]]))
 
-(defn attr= [[k v]]
-  (str k " = " v))
 
 (defn where [attrs]
-  (if attrs
-    (str " WHERE " (join " AND " (map attr= attrs)))))
+  (if (not-empty attrs)
+    (str " WHERE " (join " AND " (for [[k v] attrs]
+                                   (str k " = " v))))))
 
 (defn sql-resolver [db]
   (fn [table attrs columns]
-    (pprint (str "SELECT " (join ", " columns) " FROM " table (where attrs)))
+    (pprint (str "SELECT " (join ", " (map first columns)) " FROM " table (where attrs)))
 
     (j/query db
-      (str "SELECT " (join ", " columns) " FROM " table (where attrs)))))
+      (str "SELECT " (join ", " (map first columns)) " FROM " table (where attrs)))))
 

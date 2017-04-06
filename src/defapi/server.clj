@@ -2,8 +2,6 @@
   (:use org.httpkit.server defapi.core defapi.sql)
   (:require [mount.core :as mount :refer [defstate]]
             [compojure.core :refer :all]
-            [compojure.route :as route]
-            [mount.core :as mount]
             [ring.middleware.json :refer [wrap-json-response]])
   (:refer-clojure :exclude [resolve]))
 
