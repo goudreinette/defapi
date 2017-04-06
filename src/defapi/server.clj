@@ -16,13 +16,13 @@
 
 
 ; API
-(defn api [config executors]
+(defn api [config resolvers]
   (wrap-json-response
     (POST "/" {query-string :body}
-      {:body (->> query-string slurp (execute-all executors))})))
+      {:body (->> query-string slurp (resolve-all resolvers))})))
 
-(defmacro defapi [name config & executors]
-  (let [mounted (mount-server (api config (apply hash-map (map eval executors))) {:port 8080})]
+(defmacro defapi [name config & resolvers]
+  (let [mounted (mount-server (api config (apply hash-map (map eval resolvers))) {:port 8080})]
     `(do
        (def ~name ~mounted)
        (mount/start))))

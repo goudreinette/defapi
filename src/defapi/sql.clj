@@ -9,7 +9,7 @@
          :password ""})
 
 
-(defn execute-sql [table attrs columns]
+(defn sql-resolver [table attrs columns]
   (println table attrs columns)
   (j/query db
     (str "SELECT " (clojure.string/join ", " columns) " FROM " table)))

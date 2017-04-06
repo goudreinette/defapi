@@ -12,14 +12,14 @@
   :auto-whitespace :comma)
 
 
-(defn- get-executor [executors key]
-  (println executors)
-  (get executors
+(defn- get-resolver [resolvers key]
+  (println resolvers)
+  (get resolvers
     (keyword key)
-    (executors :default)))
+    (resolvers :default)))
 
-(defn execute-all [executors query-string]
+(defn resolve-all [resolvers query-string]
   (apply merge
     (for [[_ key & children] (query-parser query-string)]
       {key
-       ((get-executor executors key) key {} children)})))
+       ((get-resolver resolvers key) key {} children)})))

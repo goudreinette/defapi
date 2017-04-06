@@ -3,10 +3,10 @@
 
 
 ; Demo
-(defn execute-github [_ {} user repo]
-  {:user user
+(defn github-resolver [_ _ _]
+  {:user "reinvdwoerd"
    :repo "defapi"})
 
 (defapi portfolio-api db
-  :default execute-sql
-  :github execute-github)
+  :default sql-resolver
+  :github github-resolver)
